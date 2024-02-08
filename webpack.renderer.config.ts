@@ -21,7 +21,7 @@ rules.push({
 
 rules.push({
   test: /\.png$/,
-  type: 'asset/resource'
+  type: 'asset/resource',
 });
 
 export const rendererConfig: Configuration = {
@@ -32,5 +32,5 @@ export const rendererConfig: Configuration = {
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
   },
-  devtool: 'source-map'
+  devtool: 'source-map',
 };

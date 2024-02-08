@@ -4,55 +4,79 @@ import Styled from 'styled-components';
 
 export interface DialogueEntry {
   question: string;
-  answer: string;
+  answer?: string;
   answered: boolean;
 }
 
 const ChatView = (): JSX.Element => {
   const [selectedModel, setSelectedModel] = useState('mistral');
   const [dialogueEntries, setDialogueEntries] = useState<Array<DialogueEntry>>([]);
-  const [currentQuestion, setCurrentQuestion] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [currentQuestion, setCurrentQuestion] = useState<DialogueEntry>();
 
   useEffect(() => {
-    window.backendBridge.ollama.onAnswer(response => {
-      setDialogueEntries([...dialogueEntries, { question: currentQuestion, answer: response.message.content, answered: true }]);
+    window.backendBridge.ollama.onAnswer((response) => {
+      setDialogueEntries([
+        ...dialogueEntries,
+        { question: inputValue, answer: response.message.content, answered: true },
+      ]);
 
-      setCurrentQuestion('');
+      setInputValue('');
     });
 
     return () => {
       window.backendBridge.removeAllListeners(OllamaChannel.OllamaAnswer);
-    }
+    };
   });
 
-  const handleQuestionAsked = (question: string) => {
-    window.backendBridge.ollama.question({ model: selectedModel, query: question });
-  }
+  const handleQuestionAsked = async (question: string) => {
+    const dialogueEntry = {
+      question: question,
+      answered: false,
+    };
+
+    setCurrentQuestion(dialogueEntry);
+    setInputValue('');
+
+    const response = await window.backendBridge.ollama.question({
+      model: selectedModel,
+      query: question,
+    });
+
+    if (response) {
+      setCurrentQuestion(undefined);
+      setDialogueEntries([
+        ...dialogueEntries,
+        { question: question, answer: response.message.content, answered: true },
+      ]);
+    }
+  };
 
   const handleQuestionChange = (e: FormEvent<HTMLInputElement>) => {
-    setCurrentQuestion(e.currentTarget.value);
+    setInputValue(e.currentTarget.value);
   };
 
   return (
     <Chat.Layout>
       <Chat.Main>
-        {
-          dialogueEntries.map((entry, index) => {
-            return (
-              <Chat.QuestionWrapper key={`dialogue-${index}`} style={{ display: 'flex', flexDirection: 'column' }}>
-                {entry.question && <Chat.Question >{`> ${entry.question}`}</Chat.Question>}
-                {entry.answer && <Chat.Answer>{entry.answer}</Chat.Answer>}
-              </Chat.QuestionWrapper>
-            )
-          })
-        }
-        { }
+        {dialogueEntries.map((entry, index) => {
+          return (
+            <Chat.QuestionWrapper
+              key={`dialogue-${index}`}
+              style={{ display: 'flex', flexDirection: 'column' }}
+            >
+              {entry.question && <Chat.Question>{`> ${entry.question}`}</Chat.Question>}
+              {entry.answer && <Chat.Answer>{entry.answer}</Chat.Answer>}
+            </Chat.QuestionWrapper>
+          );
+        })}
+        {currentQuestion && <Chat.Question>{`> ${currentQuestion.question}`}</Chat.Question>}
       </Chat.Main>
       <Chat.Bottom>
         <Chat.InputWrapper>
           <Chat.Arrow>&gt;</Chat.Arrow>
-          <Chat.Input value={currentQuestion} onChange={handleQuestionChange} />
-          <Chat.SubmitButton onClick={() => handleQuestionAsked(currentQuestion)} />
+          <Chat.Input value={inputValue} onChange={handleQuestionChange} />
+          <Chat.SubmitButton onClick={() => handleQuestionAsked(inputValue)} />
         </Chat.InputWrapper>
       </Chat.Bottom>
       {/* <div onClick={() => handleQuestionAsked('How much is 5 times 5?')}>Ask Olama</div>
@@ -145,7 +169,7 @@ const Chat = {
     &:hover {
       background: ${(props) => props.theme.colors.emerald};
     }
-  `
+  `,
 };
 
 export default ChatView;

@@ -7,7 +7,6 @@ import { truncateString } from './../../helpers';
 
 // img
 import copyIcon from './../../assets/images/copy-link.png';
-import RoundButton from '../buttons/roundButton';
 
 export interface Props {
   account: string;
@@ -25,20 +24,18 @@ const MetaMaskModal = forwardRef<HTMLDivElement>((props: Props, ref) => {
         {isClipboardAvailable ? (
           <MetaMaskRoot.Row>
             <MetaMaskRoot.Value>{truncateString(account)}</MetaMaskRoot.Value>
-            <MetaMaskRoot.CopyButton src={copyIcon} onClick={() => navigator.clipboard.writeText(account)} />
+            <MetaMaskRoot.CopyButton
+              src={copyIcon}
+              onClick={() => navigator.clipboard.writeText(account)}
+            />
           </MetaMaskRoot.Row>
         ) : (
           <MetaMaskRoot.Value>{truncateString(account)}</MetaMaskRoot.Value>
         )}
       </MetaMaskRoot.Group>
-      <MetaMaskRoot.Row>
-        <RoundButton value={'Add MOR'} inProgress={true} onClick={() => undefined} />
-        <RoundButton value={'Sign'} onClick={() => undefined} />
-      </MetaMaskRoot.Row>
-      <MetaMaskRoot.Group>
-      </MetaMaskRoot.Group>
+      <MetaMaskRoot.Group></MetaMaskRoot.Group>
     </MetaMaskRoot.Layout>
-  )
+  );
 });
 
 const MetaMaskRoot = {
@@ -46,13 +43,13 @@ const MetaMaskRoot = {
     display: flex;
     flex-direction: column;
     width: 250px;
-    height: 150px;
+    height: 70px;
     border-radius: 10px;
     background: ${(props) => props.theme.colors.core};
+    border: 5px solid ${(props) => props.theme.colors.hunter};
     position: absolute;
     right: -10px;
     top: 75px;
-    box-shadow: 10px 10px 5px -7px rgba(0,0,0,0.5);
     padding: 10px;
   `,
   Group: Styled.div`
@@ -70,12 +67,14 @@ const MetaMaskRoot = {
   Label: Styled.label`
     display: flex;
     font-family: ${(props) => props.theme.fonts.family.primary.regular};
-    font-size: ${(props) => props.theme.fonts.size.smallest};
+    font-size: ${(props) => props.theme.fonts.size.small};
+    color: ${(props) => props.theme.colors.balance};
   `,
   Value: Styled.span`
     display: flex;
     font-family: ${(props) => props.theme.fonts.family.secondary.bold};
     font-size: ${(props) => props.theme.fonts.size.small};
+    color: ${(props) => props.theme.colors.notice};
   `,
   CopyButton: Styled.img`
     display: flex;
@@ -83,7 +82,7 @@ const MetaMaskRoot = {
     height: 15px;
     margin-left: 5px;
     cursor: pointer;
-  `
+  `,
 };
 
 export default MetaMaskModal;

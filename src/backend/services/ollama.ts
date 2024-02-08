@@ -1,48 +1,63 @@
 import { ipcMain } from 'electron';
 import { Ollama, ProgressResponse } from 'ollama';
-import path from 'path';
-import os from 'os';
-import { isDev } from '..';
+import { execFile, ChildProcess } from 'child_process';
+import { isDev, sendOllamaStatusToRenderer } from '..';
 
 // events
 import { IpcMainChannel, OllamaChannel } from '../../events';
-import { executeCommandElevated, runDelayed } from './system';
+import {
+  executeCommandElevated,
+  getDefaultAppDataPathByPlatform,
+  getExecutablePathByPlatform,
+  killProcess,
+  runDelayed,
+} from './system';
+
+// storage
+import { getModelPathFromStorage } from '../storage';
 
 // constants
 const DEFAULT_OLLAMA_URL = 'http://127.0.0.1:11434/';
+const DEFAULT_OLLAMA_MODEL = 'mistral';
 
 // commands
 export const SERVE_OLLAMA_CMD = 'ollama serve';
 export const WSL_SERVE_OLLAMA_CMD = 'wsl ollama serve';
 
 // ollama instance
-let ollama: Ollama = null;
+let ollama: Ollama;
+let ollamaProcess: ChildProcess | null;
 
-export const loadOllama = async (): Promise<boolean> => {
+export const loadOllama = async () => {
   let runningInstance = await isOllamaInstanceRunning();
 
-  if (runningInstance.isRunning) {
-    ipcMain.emit(OllamaChannel.OllamaStatusUpdate, `Local instance of ollama is running and connected at ${runningInstance.url}`);
-
+  if (runningInstance) {
     // connect to local instance
     ollama = new Ollama({
-      host: runningInstance.url
+      host: DEFAULT_OLLAMA_URL,
     });
+
+    await sendOllamaStatusToRenderer(
+      `Local instance of ollama is running and connected at ${DEFAULT_OLLAMA_URL}`,
+    );
 
     return true;
   }
 
-  runningInstance = await tryLocalOllamaSpawn();
+  const customAppData = getModelPathFromStorage();
+  runningInstance = await packedExecutableOllamaSpawn(customAppData);
 
-  if (runningInstance.isRunning) {
-    ipcMain.emit(OllamaChannel.OllamaStatusUpdate, `Local instance of ollama is running and connected at ${runningInstance.url}`);
-
+  if (runningInstance) {
     // connect to local instance
     ollama = new Ollama({
-      host: runningInstance.url
+      host: DEFAULT_OLLAMA_URL,
     });
 
-    return true; 
+    await sendOllamaStatusToRenderer(
+      `Local instance of ollama is running and connected at ${DEFAULT_OLLAMA_URL}`,
+    );
+
+    return true;
   }
 
   ipcMain.emit(IpcMainChannel.Error, `Couldn't start Ollama locally.`);
@@ -50,53 +65,71 @@ export const loadOllama = async (): Promise<boolean> => {
   return false;
 };
 
-export const isOllamaInstanceRunning = async (url?: string): Promise<{ isRunning: boolean, url?: string }> => {
+export const isOllamaInstanceRunning = async (url?: string): Promise<boolean> => {
   try {
     const usedUrl = url ?? DEFAULT_OLLAMA_URL;
+
+    await sendOllamaStatusToRenderer(`Checking if ollama instance is running at ${usedUrl}`);
+
     const ping = await fetch(usedUrl);
 
-    return ping.status === 200
-      ? { isRunning: true, url: usedUrl }
-      : { isRunning: false };
+    return ping.status === 200;
   } catch (err) {
-    return { isRunning: false }
+    return false;
   }
 };
 
-export const tryLocalOllamaSpawn = async () => {
-  const command = isDev()
-    ? WSL_SERVE_OLLAMA_CMD
-    : SERVE_OLLAMA_CMD;
+export const packedExecutableOllamaSpawn = async (customDataPath?: string) => {
+  await sendOllamaStatusToRenderer(`Trying to spawn locally installed ollama`);
 
-    try {
-      executeCommandElevated(command)
-    } catch (err) {
-      console.log(err);
+  try {
+    spawnLocalExecutable(customDataPath);
+  } catch (err) {
+    console.error(err);
+  }
+
+  return await runDelayed(isOllamaInstanceRunning, 10000);
+};
+
+export const devRunLocalWSLOllama = (customDataPath?: string) => {
+  executeCommandElevated(
+    WSL_SERVE_OLLAMA_CMD,
+    customDataPath ? { OLLAMA_MODELS: customDataPath } : undefined,
+  );
+};
+
+export const spawnLocalExecutable = async (customDataPath?: string) => {
+  const { executablePath, appDataPath } = getOllamaExecutableAndAppDataPath(customDataPath);
+
+  const env = {
+    ...process.env,
+    OLLAMA_MODELS: appDataPath,
+  };
+
+  ollamaProcess = execFile(executablePath, ['serve'], { env }, (err, stdout, stderr) => {
+    if (err) {
+      throw new Error(`exec error: ${err.message}`);
     }
 
-    return await runDelayed(isOllamaInstanceRunning);
+    if (stderr) {
+      throw new Error(`stderr: ${stderr}`);
+    }
+  });
 };
 
-export const getOllamaExecutableAndAppDataPath = (): { executable: string, appDataPath: string } => {
-  switch (process.platform) {
-    case 'win32':
-      return {
-        executable: 'ollama.exe',
-        appDataPath: path.join(os.homedir(), "AppData", "Local", "MorpheusAI", "SubMod")
-      };
-    case 'darwin':
-      return {
-        executable: 'ollama-darwin',
-        appDataPath: path.join(os.homedir(), "Library", "Application Support", "MorpheusAI", "SubMod")
-      };
-    case 'linux':
-      return {
-        executable: 'ollama-linux',
-        appDataPath: path.join(os.homedir(), ".config", "MorpheusAI", "SubMod")
-      };
-    default:
-      throw new Error(`Unsupported platform detected: ${process.platform}`);
-  }
+export const getOllamaExecutableAndAppDataPath = (
+  customDataPath?: string,
+): {
+  executablePath: string;
+  appDataPath: string;
+} => {
+  const appDataPath = customDataPath ?? getDefaultAppDataPathByPlatform();
+  const executablePath = getExecutablePathByPlatform();
+
+  return {
+    executablePath,
+    appDataPath,
+  };
 };
 
 export const askOllama = async (model: string, message: string) => {
@@ -105,17 +138,43 @@ export const askOllama = async (model: string, message: string) => {
     messages: [
       {
         role: 'user',
-        content: `${message}`
-      }
-    ]
+        content: `${message}`,
+      },
+    ],
   });
 };
 
+export const getOrPullModel = async (model: string) => {
+  await installModelWithStatus(model);
+
+  return findModel(model);
+};
+
 export const installModelWithStatus = async (model: string) => {
-  return await ollama.pull({
+  const stream = await ollama.pull({
     model,
-    stream: true
+    stream: true,
   });
+
+  for await (const part of stream) {
+    if (part.digest) {
+      let percent = 0;
+
+      if (part.completed && part.total) {
+        percent = Math.round((part.completed / part.total) * 100);
+
+        await sendOllamaStatusToRenderer(`${part.status} ${percent}%`);
+      }
+    } else {
+      await sendOllamaStatusToRenderer(`${part.status}`);
+    }
+  }
+};
+
+export const findModel = async (model: string) => {
+  const allModels = await ollama.list();
+
+  return allModels.models.find((m) => m.name.toLowerCase().includes(model));
 };
 
 export const getAllLocalModels = async () => {
@@ -136,4 +195,15 @@ export const consumeStream = async (stream: AsyncGenerator<ProgressResponse, any
       return part.status;
     }
   }
+};
+
+export const stopOllama = async () => {
+  if (!ollamaProcess) {
+    return;
+  }
+
+  killProcess(ollamaProcess);
+
+  ollamaProcess.removeAllListeners();
+  ollamaProcess = null;
 };

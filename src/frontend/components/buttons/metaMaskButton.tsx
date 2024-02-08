@@ -14,7 +14,7 @@ export interface Props {
 type BadgeProps = {
   $connected: boolean;
   $connecting: boolean;
-}
+};
 
 export default forwardRef<HTMLDivElement>((props: Props, ref) => {
   const { connected, connecting, onClick } = props;
@@ -57,7 +57,7 @@ const MetaMaskButton = {
     width: 10px;
     height: 10px;
     border-radius: 5px;
-    background-color: ${(props) => props.$connecting ? 'orange' : props.$connected ? 'green' : 'red'};
+    background-color: ${(props) => (props.$connecting ? 'orange' : props.$connected ? 'green' : 'red')};
     margin-right: 10px;
-  `
-}
+  `,
+};

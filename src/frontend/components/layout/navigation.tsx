@@ -13,9 +13,14 @@ import SettingsImg from './../../assets/images/settings.svg';
 const MainNavigation = () => {
   return (
     <TopNav.Layout>
-      <TopNav.MainNavButton icon={<TopNav.ChatIcon />} text="chat" href='/chat' exact={false} />
-      <TopNav.MainNavButton icon={<TopNav.HomeIcon />} text="home" href="/" exact={true} />
-      <TopNav.MainNavButton icon={<TopNav.SettingsIcon />} text="settings" href='/settings' exact={false} />
+      <TopNav.MainNavButton icon={<TopNav.ChatIcon />} text="chat" href="/chat" exact={true} />
+      {/* <TopNav.MainNavButton icon={<TopNav.HomeIcon />} text="home" href="/" exact={true} /> */}
+      <TopNav.MainNavButton
+        icon={<TopNav.SettingsIcon />}
+        text="settings"
+        href="/settings"
+        exact={true}
+      />
     </TopNav.Layout>
   );
 };
@@ -51,8 +56,7 @@ const TopNav = {
     display: flex;
     width: 50px;
     height: 50px;
-  `
+  `,
 };
 
 export default MainNavigation;
-

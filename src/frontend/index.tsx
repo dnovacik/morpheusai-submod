@@ -8,6 +8,7 @@ import { HashRouter } from 'react-router-dom';
 import { QrCodeModal } from './components/modals/qr-code-modal';
 import AppInit from './components/layout/appInit';
 import Main from './components/layout/main';
+import ChooseDirectoryModalComponent from './components/modals/chooseDirectoryModal';
 
 // helpers
 import { updateQrCode } from './helpers';
@@ -15,38 +16,78 @@ import { IpcChannel } from './../events';
 
 // theme
 import ThemeProvider from './theme/themeProvider';
-import GlobalStyle from './theme/index'
+import GlobalStyle from './theme/index';
 import './index.css';
 
 // root
-const rootElement = document.querySelector('#root');
+const rootElement = document.querySelector('#root') as Element;
 const root = createRoot(rootElement);
 
 const AppRoot = () => {
+  const [isModelsPathSet, setIsModelPathSet] = useState(false);
+  const [modelsPathFetched, setIsModelPathFetched] = useState(false);
+  const [modelsPath, setModelsPath] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
 
-  useEffect(() => {
-    const init = async () => {
-      const result = await window.backendBridge.main.init();
+  // get the status of the saved folder
+  // useEffect(() => {
+  //   const getPath = async () => {
+  //     return await window.backendBridge.main.getFolderPath();
+  //   };
 
-      setIsInitialized(result);
-    };
+  //   getPath()
+  //     .then((value) => {
+  //       setModelsPath(value);
+  //       setIsModelPathFetched(true);
+  //     })
+  //     .catch((err) => console.error(err));
+  // }, []);
 
-    init()
-      .catch(err => console.error(err));
+  // useEffect(() => {
+  //   if (modelsPath) {
+  //     setIsModelPathSet(true);
 
-      return () => {
-        window.backendBridge.removeAllListeners(IpcChannel.AppInit);
-      }
-  });
+  //     handleOllamaInit();
+  //   }
+  // }, [modelsPath]);
 
   // useEffect(() => {
   //   window.backendBridge.main.onInit((result: boolean) => setIsInitialized(result));
 
   //   return () => {
-  //     window.backendBridge.removeAllListeners('app:init');
+  //     window.backendBridge.removeAllListeners(IpcChannel.AppInit);
   //   }
   // });
+
+  useEffect(() => {
+    handleOllamaInit();
+  }, []);
+
+  const handleOllamaInit = async () => {
+    const ollamaInit = await window.backendBridge.ollama.init();
+
+    if (ollamaInit) {
+      const model = await window.backendBridge.ollama.getModel('mistral');
+
+      if (model) {
+        setIsInitialized(true);
+
+        return;
+      } else {
+        console.error(`Something went wrong with pulling model ${'mistral'}`);
+      }
+    }
+
+    console.error(`Couldn't initialize Ollama correctly.`);
+  };
+
+  const handleSelectFolderClicked = async () => {
+    const result = await window.backendBridge.main.setFolderPath();
+
+    if (result) {
+      window.backendBridge.main.sendInit();
+    }
+  };
 
   return (
     <React.StrictMode>
@@ -55,20 +96,20 @@ const AppRoot = () => {
           debug={false}
           sdkOptions={{
             logging: {
-              developerMode: false
+              developerMode: false,
             },
             communicationServerUrl: 'https://metamask-sdk-socket.metafi.codefi.network/',
             checkInstallationImmediately: false,
             i18nOptions: {
-              enabled: true
+              enabled: true,
             },
             dappMetadata: {
               name: 'MorpheusAI SubMod',
-              url: window.location.host
+              url: window.location.host,
             },
             modals: {
               install: ({ link }) => {
-                let modalContainer: HTMLElement | null;
+                let modalContainer: HTMLElement;
 
                 return {
                   mount: () => {
@@ -103,21 +144,21 @@ const AppRoot = () => {
                   },
                 };
               },
-            }
+            },
           }}
         >
           {!isInitialized && <AppInit />}
           {isInitialized && <Main />}
-
+          {/* {modelsPathFetched && !isModelsPathSet && <ChooseDirectoryModalComponent onClick={async () => await handleSelectFolderClicked()} />} */}
         </MetaMaskProvider>
       </ThemeProvider>
     </React.StrictMode>
-  )
+  );
 };
 
 root.render(
   <HashRouter>
     <GlobalStyle />
     <AppRoot />
-  </HashRouter>
-)
+  </HashRouter>,
+);

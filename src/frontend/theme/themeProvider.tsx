@@ -1,24 +1,24 @@
-import React, { ReactNode, createContext, useState } from 'react'
-import { ThemeProvider } from 'styled-components'
+import React, { ReactNode, createContext, useState } from 'react';
+import { ThemeProvider } from 'styled-components';
 
-import { darkTheme, lightTheme } from './theme'
+import { darkTheme, lightTheme } from './theme';
 
 export const ThemeContext = createContext({
   isDarkTheme: true,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  toggleTheme: () => { },
-})
+  toggleTheme: () => {},
+});
 
 interface ThemeProviderProps {
-  children?: ReactNode
+  children?: ReactNode;
 }
 
 export default ({ children }: ThemeProviderProps) => {
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useState(false);
 
   const toggleTheme = () => {
-    setDark(!dark)
-  }
+    setDark(!dark);
+  };
 
   return (
     <ThemeContext.Provider
@@ -27,9 +27,7 @@ export default ({ children }: ThemeProviderProps) => {
         toggleTheme,
       }}
     >
-      <ThemeProvider theme={dark ? darkTheme : lightTheme}>
-        {children}
-      </ThemeProvider>
+      <ThemeProvider theme={dark ? darkTheme : lightTheme}>{children}</ThemeProvider>
     </ThemeContext.Provider>
-  )
-}
+  );
+};

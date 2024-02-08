@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export const useClickOutside = (
-  handleOnClickOutside: (event: MouseEvent | TouchEvent) => void
-) => {
+export const useClickOutside = (handleOnClickOutside: (event: MouseEvent | TouchEvent) => void) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,4 +21,4 @@ export const useClickOutside = (
   }, [handleOnClickOutside]);
 
   return ref;
-} 
+};

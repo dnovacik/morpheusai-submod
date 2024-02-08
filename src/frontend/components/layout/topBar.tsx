@@ -12,54 +12,51 @@ import { useClickOutside } from './../../hooks';
 
 // img
 import logo from './../../assets/images/logo_white.png';
+import close from './../../assets/images/close.svg';
+import minimize from './../../assets/images/minimize.svg';
 
 export default () => {
-  const { ready, sdk, /*connected,*/ connecting, provider, chainId, /*account,*/ balance } = useSDK();
+  const { ready, sdk, connected, connecting, provider, chainId, account, balance } = useSDK();
   const [metamaskVisible, setMetamaskVisible] = useState(false);
 
   const metamaskButtonRef = useRef(null);
   const ref = useClickOutside((event) => {
-    if (!metamaskButtonRef.current.contains(event.target)) {
+    // eslint-disable-next-line
+    // @ts-ignore
+    if (metamaskButtonRef.current && !metamaskButtonRef.current.contains(event.target)) {
       setMetamaskVisible(false);
     }
   });
 
-  const connected = true;
-  const account = '0x0Ad2fa5D8F420ff6D87192b32d89faf70466b30b';
-
   const connect = async () => {
     try {
       const connectResult = await sdk?.connect();
-
-      await addToken()
     } catch (err) {
       console.error(`failed to connect...`, err);
     }
-  }
+  };
 
-  const addToken = async () => {
-    const tokenData = {
-      address: '0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC', //0xe6D01D086a844a61641C75f1BCA572e7aa70e154 MOR
-      symbol: 'STORJ',
-      deimals: 8
-    };
+  // const addToken = async () => {
+  //   const tokenData = {
+  //     address: '0xB64ef51C888972c908CFacf59B47C1AfBC0Ab8aC', //0xe6D01D086a844a61641C75f1BCA572e7aa70e154 MOR
+  //     symbol: 'STORJ',
+  //     decimals: 8,
+  //   };
 
-    try {
-      const result = await provider.request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20',
-          options: { ...tokenData }
-        }
-      })
+  //   try {
+  //     const result = await provider?.request({
+  //       method: 'wallet_watchAsset',
+  //       params: {
+  //         type: 'ERC20',
+  //         options: { ...tokenData },
+  //       },
+  //     });
 
-      console.log(result)
-      console.log(balance)
-      // console.log(account)
-    } catch (err) {
-      console.log(err)
-    }
-  }
+  //     // console.log(account)
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   const onConnectClicked = async () => {
     if (connected) {
@@ -75,20 +72,34 @@ export default () => {
     }
 
     await connect();
-  }
+  };
+
+  const onCloseClicked = () => {
+    window.backendBridge.main.close();
+  };
+
+  const onMinimizeClicked = () => {
+    window.backendBridge.main.minimize();
+  };
 
   return (
     <TopBar.Layout>
       <TopBar.Draggable />
       <TopBar.HeaderWrapper>
-        <TopBar.Left></TopBar.Left>
+        <TopBar.Left>
+          <TopBar.CloseButton onClick={onCloseClicked} />
+          <TopBar.MinimizeButton onClick={onMinimizeClicked} />
+        </TopBar.Left>
         <TopBar.Middle>
           <TopBar.Logo src={logo} />
           <TopBar.Header>morpheus ai</TopBar.Header>
         </TopBar.Middle>
         <TopBar.Right>
-          <ConnectWalletButton {... { connected, connecting, onClick: onConnectClicked }} ref={metamaskButtonRef} />
-          {metamaskVisible && <MetaMaskModal { ... { account }} ref={ref} />}
+          <ConnectWalletButton
+            {...{ connected, connecting, onClick: onConnectClicked }}
+            ref={metamaskButtonRef}
+          />
+          {metamaskVisible && <MetaMaskModal {...{ account }} ref={ref} />}
         </TopBar.Right>
       </TopBar.HeaderWrapper>
     </TopBar.Layout>
@@ -148,6 +159,19 @@ const TopBar = {
     z-index: 1;
     position: relative;
   `,
+  CloseButton: Styled(close)`
+    display: flex;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    margin-right: 10px;
+  `,
+  MinimizeButton: Styled(minimize)`
+    display: flex;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+  `,
   Logo: Styled.img`
     display: flex;
     height: 100px;
@@ -160,5 +184,5 @@ const TopBar = {
     color: ${(props) => props.theme.colors.balance};
     position: absolute;
     bottom: 10px;
-  `
-}
+  `,
+};

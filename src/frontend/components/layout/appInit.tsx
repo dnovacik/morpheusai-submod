@@ -1,11 +1,12 @@
 // libs
 import React, { useEffect, useState } from 'react';
-import Styled from 'styled-components';
+import Styled, { useTheme } from 'styled-components';
 import { InfinitySpin } from 'react-loader-spinner';
 import { OllamaChannel } from './../../../events';
 
 const AppInit = () => {
-  const [currentStatus, setCurrentStatus] = useState('test');
+  const [currentStatus, setCurrentStatus] = useState('');
+  const theme = useTheme();
 
   useEffect(() => {
     window.backendBridge.ollama.onStatusUpdate((status: string) => {
@@ -14,17 +15,17 @@ const AppInit = () => {
 
     return () => {
       window.backendBridge.removeAllListeners(OllamaChannel.OllamaStatusUpdate);
-    }
+    };
   });
 
   return (
     <Main.Layout>
       <Main.Draggable />
       <Main.LoaderWrapper>
-        <Main.Loader width='200' color='#fff' />
+        <Main.Loader width="200" color={theme.colors.emerald} />
         <Main.LoaderText>Initializing...</Main.LoaderText>
       </Main.LoaderWrapper>
-      { currentStatus && <Main.StatusText>{currentStatus}</Main.StatusText> }
+      {currentStatus && <Main.StatusText>{currentStatus}</Main.StatusText>}
     </Main.Layout>
   );
 };
@@ -74,7 +75,7 @@ const Main = {
     align-items: center;
     justify-content: center;
     font-family: ${(props) => props.theme.fonts.family.primary.bold};
-    color: ${(props) => props.theme.colors.balance};
+    color: ${(props) => props.theme.colors.emerald};
   `,
   StatusText: Styled.div`
     display: flex;
@@ -83,7 +84,7 @@ const Main = {
     font-size: ${(props) => props.theme.fonts.size.smallest};
     position: absolute;
     bottom: 10px;
-  `
+  `,
 };
 
 export default AppInit;

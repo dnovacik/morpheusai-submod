@@ -37,5 +37,5 @@ const LeftBar = {
   MainNav: Styled(MainNavigation)`
     display: flex;
     flex-direction: column;
-  `
-}
+  `,
+};

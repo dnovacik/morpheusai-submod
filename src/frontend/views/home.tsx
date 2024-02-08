@@ -6,7 +6,7 @@ const HomeView = (): JSX.Element => {
   return (
     <Home.Layout>
       <Home.Title>Home</Home.Title>
-      <Home.Loader width='50' color='#000' visible={true} radius={1} />
+      <Home.Loader width="50" color="#000" visible={true} radius={1} />
     </Home.Layout>
   );
 };
@@ -29,7 +29,7 @@ const Home = {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-  `
+  `,
 };
 
-export default HomeView
+export default HomeView;

@@ -5,28 +5,28 @@ export interface ITheme {
     hunter: string;
     notice: string;
     balance: string;
-  },
+  };
   layout: {
     topBarHeight: number;
-  },
+  };
   fonts: {
     family: {
       primary: {
         regular: string;
         bold: string;
-      },
+      };
       secondary: {
         regular: string;
         bold: string;
-      }
-    },
+      };
+    };
     size: {
       smallest: string;
       small: string;
       medium: string;
       large: string;
-    }
-  }
+    };
+  };
 }
 
 const common = {
@@ -35,19 +35,19 @@ const common = {
     emerald: '#179C65',
     hunter: '#106F48',
     notice: '#FDB366',
-    balance: '#FFFFFF'
+    balance: '#FFFFFF',
   },
   layout: {
     leftBarWidth: 200,
-    topBarHeight: 130
+    topBarHeight: 130,
   },
   fonts: {
     size: {
       smallest: '12px',
       small: '14px',
       medium: '20px',
-      large: '32px'
-    }
+      large: '32px',
+    },
   },
 };
 
@@ -58,15 +58,15 @@ export const lightTheme: ITheme = {
     family: {
       primary: {
         regular: 'Roboto Regular',
-        bold: 'Roboto Bold'
+        bold: 'Roboto Bold',
       },
       secondary: {
         regular: 'Montserrat Regular',
-        bold: 'Montserrat Bold'
-      }
-    }
+        bold: 'Montserrat Bold',
+      },
+    },
   },
-  colors: { ...common.colors }
+  colors: { ...common.colors },
 };
 
 export const darkTheme: ITheme = {
@@ -76,13 +76,13 @@ export const darkTheme: ITheme = {
     family: {
       primary: {
         regular: 'Roboto Regular',
-        bold: 'Roboto Bold'
+        bold: 'Roboto Bold',
       },
       secondary: {
         regular: 'Montserrat Regular',
-        bold: 'Montserrat Bold'
-      }
-    }
+        bold: 'Montserrat Bold',
+      },
+    },
   },
-  colors: { ...common.colors }
+  colors: { ...common.colors },
 };

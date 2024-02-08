@@ -15,6 +15,7 @@ export const QrCodeModal = ({ onClose }: { onClose: () => void }) => {
         zIndex: 1000,
         animation: 'fadeIn 0.3s',
       }}
+      onClick={() => onClose()}
     >
       <div
         style={{
@@ -26,8 +27,6 @@ export const QrCodeModal = ({ onClose }: { onClose: () => void }) => {
           alignItems: 'center',
         }}
       >
-        <h2>Custom Modal</h2>
-
         <div
           id="sdk-qrcode-container"
           style={{
@@ -36,15 +35,6 @@ export const QrCodeModal = ({ onClose }: { onClose: () => void }) => {
             justifyContent: 'center',
           }}
         />
-
-        <button
-          onClick={() => {
-            onClose();
-          }}
-          style={{ marginTop: '20px' }}
-        >
-          Close
-        </button>
       </div>
     </div>
   );

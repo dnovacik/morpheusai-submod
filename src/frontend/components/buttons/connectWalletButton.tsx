@@ -14,7 +14,7 @@ export interface Props {
 type BadgeProps = {
   $connected: boolean;
   $connecting: boolean;
-}
+};
 
 export default forwardRef<HTMLDivElement>((props: Props, ref) => {
   const { connected, connecting, onClick } = props;
@@ -22,7 +22,7 @@ export default forwardRef<HTMLDivElement>((props: Props, ref) => {
   return (
     <ConnectWalletButton.Wrapper onClick={onClick} ref={ref}>
       <ConnectWalletButton.Logo src={wallet} />
-      <ConnectWalletButton.Text>{'connect'}</ConnectWalletButton.Text>
+      <ConnectWalletButton.Text>{connected ? 'connected' : 'connect'}</ConnectWalletButton.Text>
       {!connecting && <ConnectWalletButton.Badge $connected={connected} $connecting={connecting} />}
     </ConnectWalletButton.Wrapper>
   );
@@ -44,6 +44,10 @@ const ConnectWalletButton = {
     border: 2px solid ${(props) => props.theme.colors.hunter};
     z-index: 1;
     padding: 0 15px;
+
+    &:hover {
+      border: 2px solid ${(props) => props.theme.colors.emerald};
+    }
   `,
   Logo: Styled.img`
     display: flex;
@@ -63,6 +67,6 @@ const ConnectWalletButton = {
     width: 10px;
     height: 10px;
     border-radius: 5px;
-    background-color: ${(props) => props.$connecting ? 'orange' : props.$connected ? 'green' : 'red'};
-  `
-}
+    background-color: ${(props) => (props.$connecting ? 'orange' : props.$connected ? 'green' : 'red')};
+  `,
+};

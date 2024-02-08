@@ -4,16 +4,16 @@ import { Route, Routes } from 'react-router-dom';
 import Styled from 'styled-components';
 
 // views
-import HomeView from './views/home';
+// import HomeView from './views/home';
 import SettingsView from './views/settings';
 import ChatView from './views/chat';
 
 export const RoutesWrapper = () => {
   return (
     <Routes>
-      <Route path='/' Component={HomeView} />
-      <Route path='/settings' Component={SettingsView} />
-      <Route path='/chat' Component={ChatView} />
+      {/* <Route path="/" Component={HomeView} /> */}
+      <Route path="/settings" Component={SettingsView} />
+      <Route path="/chat" Component={ChatView} />
     </Routes>
   );
 };
@@ -31,4 +31,4 @@ const Router = Styled.div`
   flex-direction: column;
   height: 100%;
   width: 100%;
-`
+`;

@@ -1,7 +1,7 @@
 {
   "name": "mor-submod",
   "productName": "mor-submod",
-  "version": "1.0.0",
+  "version": "0.0.1-alpha",
   "description": "MorpheusAI SubMod",
   "main": ".webpack/main",
   "scripts": {
@@ -9,11 +9,12 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "lint": "eslint --ext .ts,.tsx .",
+    "pretty": "npx prettier src/**/*.{js,jsx,ts,tsx,json,css} --write"
   },
   "prettier": {
     "tabWidth": 2,
-    "semi": false,
+    "semi": true,
     "singleQuote": true,
     "printWidth": 100
   },
@@ -45,6 +46,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "@electron-forge/plugin-webpack": "^7.2.0",
     "@svgr/webpack": "^8.1.0",
+    "@types/ajv": "^1.0.0",
     "@types/qrcode": "^1.5.5",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-transition-group": "^4.4.10",
@@ -52,6 +54,7 @@
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
+    "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^6.0.0",
     "electron": "28.1.4",
     "eslint": "^8.0.1",
@@ -69,8 +72,10 @@
     "@metamask/sdk": "^0.14.2",
     "@metamask/sdk-react": "^0.14.2",
     "@metamask/sdk-react-ui": "^0.14.3",
+    "axios": "^1.6.7",
     "check-disk-space": "^3.4.0",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.1.0",
     "native-is-elevated": "^0.7.0",
     "ollama": "^0.4.3",
     "qrcode": "^1.5.3",

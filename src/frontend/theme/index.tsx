@@ -2,10 +2,10 @@
 import { createGlobalStyle } from 'styled-components';
 
 // fonts
-import MontserratRegular from './../assets/fonts/Montserrat-Regular.ttf'; 
+import MontserratRegular from './../assets/fonts/Montserrat-Regular.ttf';
 import MontserratLightItalic from './../assets/fonts/Montserrat-LightItalic.ttf';
 import MontserratLight from './../assets/fonts/Montserrat-Light.ttf';
-import MontserratSemiBold from './../assets/fonts/Montserrat-SemiBold.ttf'
+import MontserratSemiBold from './../assets/fonts/Montserrat-SemiBold.ttf';
 import MontserratBold from './../assets/fonts/Montserrat-Bold.ttf';
 import RobotoRegular from './../assets/fonts/Roboto-Regular.ttf';
 import RobotoLight from './../assets/fonts/Roboto-Light.ttf';
