@@ -14,6 +14,7 @@ import { rendererConfig } from './webpack.renderer.config';
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    name: 'mor-submod',
     extraResource: [
       './src/backend/executables/'
     ],
@@ -27,7 +28,7 @@ const config: ForgeConfig = {
           ? 'ollama.exe'
           : 'ollama-linux';
 
-      const outputResourceFolder = `${outputPaths[0]}${platform === 'darwin' ? '/Contents' : ''}/resources/executables/`;
+      const outputResourceFolder = `${outputPaths[0]}${platform === 'darwin' ? '/mor-submod.app/Contents' : ''}/resources/executables/`;
 
       fs.readdir(outputResourceFolder, (err, files) => {
         if (err) {
