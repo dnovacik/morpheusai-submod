@@ -5,6 +5,8 @@ import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerRpm } from '@electron-forge/maker-rpm';
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import { WebpackPlugin } from '@electron-forge/plugin-webpack';
+import fs from 'fs';
+import path from 'path';
 
 import { mainConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
@@ -12,10 +14,38 @@ import { rendererConfig } from './webpack.renderer.config';
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    extraResource: [
+      './src/backend/executables/'
+    ],
     icon: 'logo_white',
-    // extraResource: [
-    //   './src/backend/executables'
-    // ]
+  },
+  hooks: {
+    postPackage: async (_, { platform, outputPaths }) => {
+      const platformFile = platform === 'darwin'
+        ? 'ollama-darwin'
+        : platform === 'win32'
+          ? 'ollama.exe'
+          : 'ollama-linux';
+
+      const outputResourceFolder = `${outputPaths[0]}/resources/executables/`;
+
+      fs.readdir(outputResourceFolder, (err, files) => {
+        if (err) {
+          throw err;
+        }
+
+        files.forEach((file) => {
+          const localPath = path.join(outputResourceFolder, file);
+          console.log(localPath)
+
+          if (file !== platformFile) {
+            fs.unlinkSync(localPath);
+          } else {
+            fs.chmodSync(localPath, 755);
+          }
+        });
+      });
+    },
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
