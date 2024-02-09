@@ -27,7 +27,7 @@ const config: ForgeConfig = {
           ? 'ollama.exe'
           : 'ollama-linux';
 
-      const outputResourceFolder = `${outputPaths[0]}/resources/executables/`;
+      const outputResourceFolder = `${outputPaths[0]}${platform === 'darwin' ? '/Contents' : ''}/resources/executables/`;
 
       fs.readdir(outputResourceFolder, (err, files) => {
         if (err) {
@@ -36,7 +36,6 @@ const config: ForgeConfig = {
 
         files.forEach((file) => {
           const localPath = path.join(outputResourceFolder, file);
-          console.log(localPath)
 
           if (file !== platformFile) {
             fs.unlinkSync(localPath);
