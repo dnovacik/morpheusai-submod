@@ -49,7 +49,7 @@ export const createDirectoryElevated = (path: string) => {
 
   logger.log({
     level: 'info',
-    message: command
+    message: `Creating directory with command: ${command}`,
   });
 
   sudo.exec(command, options, (error, stdout, stderr) => {
