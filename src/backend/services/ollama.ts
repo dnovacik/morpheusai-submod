@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron';
 import { Ollama, ProgressResponse } from 'ollama';
 import { execFile, ChildProcess } from 'child_process';
+import fs from 'fs';
 import { isDev, sendOllamaStatusToRenderer } from '..';
 
 // events
@@ -15,6 +16,7 @@ import {
 
 // storage
 import { getModelPathFromStorage } from '../storage';
+import { logger } from './logger';
 
 // constants
 const DEFAULT_OLLAMA_URL = 'http://127.0.0.1:11434/';
@@ -99,22 +101,30 @@ export const devRunLocalWSLOllama = (customDataPath?: string) => {
 };
 
 export const spawnLocalExecutable = async (customDataPath?: string) => {
-  const { executablePath, appDataPath } = getOllamaExecutableAndAppDataPath(customDataPath);
+  try {
+    const { executablePath, appDataPath } = getOllamaExecutableAndAppDataPath(customDataPath);
 
-  const env = {
-    ...process.env,
-    OLLAMA_MODELS: appDataPath,
-  };
-
-  ollamaProcess = execFile(executablePath, ['serve'], { env }, (err, stdout, stderr) => {
-    if (err) {
-      throw new Error(`exec error: ${err.message}`);
+    if (!fs.existsSync(appDataPath)) {
+      fs.mkdirSync(appDataPath, { recursive: true });
     }
 
-    if (stderr) {
-      throw new Error(`stderr: ${stderr}`);
-    }
-  });
+    const env = {
+      ...process.env,
+      OLLAMA_MODELS: appDataPath,
+    };
+
+    ollamaProcess = execFile(executablePath, ['serve'], { env }, (err, stdout, stderr) => {
+      if (err) {
+        throw new Error(`exec error: ${err.message}`);
+      }
+
+      if (stderr) {
+        throw new Error(`stderr: ${stderr}`);
+      }
+    });
+  } catch (err) {
+    logger.error(err);
+  }
 };
 
 export const getOllamaExecutableAndAppDataPath = (

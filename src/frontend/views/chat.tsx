@@ -80,9 +80,10 @@ const ChatView = (): JSX.Element => {
             onChange={handleQuestionChange}
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
               if (e.key === 'Enter') {
-                handleQuestionAsked(inputValue)
+                handleQuestionAsked(inputValue);
               }
-            }} />
+            }}
+          />
           <Chat.SubmitButton onClick={() => handleQuestionAsked(inputValue)} />
         </Chat.InputWrapper>
       </Chat.Bottom>

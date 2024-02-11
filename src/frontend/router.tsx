@@ -11,7 +11,7 @@ import ChatView from './views/chat';
 export const RoutesWrapper = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to='/chat' />} />
+      <Route path="/" element={<Navigate to="/chat" />} />
       <Route path="/settings" Component={SettingsView} />
       <Route path="/chat" Component={ChatView} />
     </Routes>
