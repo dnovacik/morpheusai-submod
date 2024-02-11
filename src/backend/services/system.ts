@@ -74,7 +74,7 @@ export const getExecutablePathByPlatform = () => {
     case 'darwin':
       return isDev
         ? path.join(__dirname, '..', 'executables', 'ollama-darwin')
-        : path.join(appPath, 'Contents', 'Resources', 'executables', 'ollama-darwin');
+        : path.join(appPath, '..', 'Resources', 'executables', 'ollama-darwin');
     case 'linux':
       return isDev
         ? path.join(__dirname, '..', 'executables', 'ollama-linux')
