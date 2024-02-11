@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 import { Ollama, ProgressResponse } from 'ollama';
 import { execFile, ChildProcess } from 'child_process';
 import fs from 'fs';
@@ -7,6 +7,7 @@ import { isDev, sendOllamaStatusToRenderer } from '..';
 // events
 import { IpcMainChannel, OllamaChannel } from '../../events';
 import {
+  createDirectoryElevated,
   executeCommandElevated,
   getDefaultAppDataPathByPlatform,
   getExecutablePathByPlatform,
@@ -105,7 +106,7 @@ export const spawnLocalExecutable = async (customDataPath?: string) => {
     const { executablePath, appDataPath } = getOllamaExecutableAndAppDataPath(customDataPath);
 
     if (!fs.existsSync(appDataPath)) {
-      fs.mkdirSync(appDataPath, { recursive: true });
+      createDirectoryElevated(appDataPath);
     }
 
     const env = {
@@ -133,7 +134,7 @@ export const getOllamaExecutableAndAppDataPath = (
   executablePath: string;
   appDataPath: string;
 } => {
-  const appDataPath = customDataPath ?? getDefaultAppDataPathByPlatform();
+  const appDataPath = customDataPath || app.getPath('userData');
   const executablePath = getExecutablePathByPlatform();
 
   return {

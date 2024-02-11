@@ -5,6 +5,7 @@ import isElevated from 'native-is-elevated';
 import sudo from 'sudo-prompt';
 import { ChildProcess } from 'child_process';
 import { isDev, appPath } from './../index';
+import { logger } from './logger';
 
 export const isElevatedProcess = () => {
   return isElevated();
@@ -26,6 +27,30 @@ export const executeCommandElevated = (command: string, envOptions?: { OLLAMA_MO
     icns: './../logo_white.ico',
     ...(envOptions && { ...envOptions }),
   };
+
+  sudo.exec(command, options, (error, stdout, stderr) => {
+    if (error) {
+      throw error;
+    }
+
+    if (stderr) {
+      throw stderr;
+    }
+  });
+};
+
+export const createDirectoryElevated = (path: string) => {
+  const options = {
+    name: 'MorpheusAI SubMod',
+    icns: './../logo_white.ico',
+  };
+
+  const command = `mkdir ${path}${process.platform !== 'win32' ? ' -p' : ''}`;
+
+  logger.log({
+    level: 'info',
+    message: command
+  });
 
   sudo.exec(command, options, (error, stdout, stderr) => {
     if (error) {
