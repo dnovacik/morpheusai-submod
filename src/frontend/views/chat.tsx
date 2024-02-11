@@ -75,7 +75,14 @@ const ChatView = (): JSX.Element => {
       <Chat.Bottom>
         <Chat.InputWrapper>
           <Chat.Arrow>&gt;</Chat.Arrow>
-          <Chat.Input value={inputValue} onChange={handleQuestionChange} />
+          <Chat.Input
+            value={inputValue}
+            onChange={handleQuestionChange}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+              if (e.key === 'Enter') {
+                handleQuestionAsked(inputValue)
+              }
+            }} />
           <Chat.SubmitButton onClick={() => handleQuestionAsked(inputValue)} />
         </Chat.InputWrapper>
       </Chat.Bottom>

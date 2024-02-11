@@ -8,7 +8,7 @@ import { WebpackPlugin } from '@electron-forge/plugin-webpack';
 import fs from 'fs';
 import path from 'path';
 
-import { mainConfig } from './webpack.main.config';
+import { mainConfig, mainDevConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
 
 const config: ForgeConfig = {
@@ -16,7 +16,7 @@ const config: ForgeConfig = {
     asar: true,
     name: 'mor-submod',
     extraResource: [
-      './src/backend/executables/'
+      './src/executables/'
     ],
     icon: 'logo_white',
   },
@@ -52,7 +52,7 @@ const config: ForgeConfig = {
   plugins: [
     new AutoUnpackNativesPlugin({}),
     new WebpackPlugin({
-      mainConfig,
+      mainConfig: process.env.NODE_ENV === 'development' ? mainDevConfig : mainConfig,
       devContentSecurityPolicy:
         "connect-src 'self' unsafe-inline ws://localhost:* https://metamask-sdk-socket.metafi.codefi.network wss://metamask-sdk-socket.metafi.codefi.network data:",
       renderer: {

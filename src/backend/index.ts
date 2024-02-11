@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, IpcMainEvent } from 'electron';
+import path from 'path';
 import { IpcChannel, IpcMainChannel, OllamaChannel } from '../events';
 import {
   initOllama,
@@ -47,7 +48,6 @@ const createWindow = async (): Promise<void> => {
 };
 
 app.on('ready', async () => {
-  clearStore();
   await createWindow();
 
   ipcMain.on(IpcMainChannel.CommandOuput, (_, output: string) => {
@@ -87,3 +87,4 @@ export const sendOllamaStatusToRenderer = async (status: string) => {
 };
 
 export const isDev = !app.isPackaged;
+export const appPath = path.parse(app.getPath('exe')).dir;

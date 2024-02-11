@@ -87,8 +87,8 @@ export default () => {
       <TopBar.Draggable />
       <TopBar.HeaderWrapper>
         <TopBar.Left>
-          <TopBar.CloseButton onClick={onCloseClicked} />
-          <TopBar.MinimizeButton onClick={onMinimizeClicked} />
+          {/* <TopBar.CloseButton onClick={onCloseClicked} />
+          <TopBar.MinimizeButton onClick={onMinimizeClicked} /> */}
         </TopBar.Left>
         <TopBar.Middle>
           <TopBar.Logo src={logo} />

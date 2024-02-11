@@ -1,6 +1,6 @@
 // libs
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Styled from 'styled-components';
 
 // views
@@ -11,7 +11,7 @@ import ChatView from './views/chat';
 export const RoutesWrapper = () => {
   return (
     <Routes>
-      {/* <Route path="/" Component={HomeView} /> */}
+      <Route path="/" element={<Navigate to='/chat' />} />
       <Route path="/settings" Component={SettingsView} />
       <Route path="/chat" Component={ChatView} />
     </Routes>

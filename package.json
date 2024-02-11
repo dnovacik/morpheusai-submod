@@ -5,7 +5,7 @@
   "description": "MorpheusAI SubMod",
   "main": ".webpack/main",
   "scripts": {
-    "start": "electron-forge start",
+    "start": "cross-env NODE_ENV=development DEBUG=electron-packager electron-forge start",
     "package": "set DEBUG=electron-packager && electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",

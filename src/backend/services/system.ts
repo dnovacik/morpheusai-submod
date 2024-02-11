@@ -4,6 +4,7 @@ import os from 'os';
 import isElevated from 'native-is-elevated';
 import sudo from 'sudo-prompt';
 import { ChildProcess } from 'child_process';
+import { isDev, appPath } from './../index';
 
 export const isElevatedProcess = () => {
   return isElevated();
@@ -67,11 +68,17 @@ export const getDefaultAppDataPathByPlatform = () => {
 export const getExecutablePathByPlatform = () => {
   switch (process.platform) {
     case 'win32':
-      return path.join(__dirname, 'executables', 'ollama.exe');
+      return isDev
+        ? path.join(__dirname, '..', 'executables', 'ollama.exe')
+        : path.join(appPath, 'resources', 'executables', 'ollama.exe');
     case 'darwin':
-      return path.join(__dirname, 'executables', 'ollama-darwin');
+      return isDev
+        ? path.join(__dirname, '..', 'executables', 'ollama-darwin')
+        : path.join(appPath, 'Contents', 'Resources', 'executables', 'ollama-darwin');
     case 'linux':
-      return path.join(__dirname, 'executables', 'ollama-linux');
+      return isDev
+        ? path.join(__dirname, '..', 'executables', 'ollama-linux')
+        : path.join(appPath, 'resources', 'executables', 'ollama-linux');
     default:
       throw new Error(`Unsupported platform detected: ${process.platform}`);
   }
