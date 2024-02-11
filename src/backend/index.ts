@@ -30,7 +30,7 @@ const createWindow = async (): Promise<void> => {
     width: 1200,
     autoHideMenuBar: true,
     frame: false,
-    resizable: false,
+    resizable: isDev,
     fullscreenable: false,
     show: true,
     movable: true,
@@ -43,7 +43,9 @@ const createWindow = async (): Promise<void> => {
   await mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if (isDev) {
+    mainWindow.webContents.openDevTools();
+  }
 };
 
 app.on('ready', async () => {
