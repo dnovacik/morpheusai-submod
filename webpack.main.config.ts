@@ -1,5 +1,6 @@
 import type { Configuration } from 'webpack';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
+const WebpackPermissionsPlugin = require('webpack-permissions-plugin');
 import path from 'path';
 
 import { rules } from './webpack.rules';
@@ -14,6 +15,20 @@ const devPlugins = [
         force: true
       }
     ],
+  }),
+  new WebpackPermissionsPlugin({
+    buildFolders: [
+      {
+        path: path.resolve(__dirname, '.webpack/executables'),
+        fileMode: '755',
+        dirMode: '644'
+      }
+    ],
+    buildFiles: [
+      { path: path.resolve(__dirname, '.webpack/executables/ollama.exe'), fileMode: '755' },
+      { path: path.resolve(__dirname, '.webpack/executables/ollama-darwin'), fileMode: '755' },
+      { path: path.resolve(__dirname, '.webpack/executables/ollama-linux'), fileMode: '755' },
+    ]
   })
 ];
 

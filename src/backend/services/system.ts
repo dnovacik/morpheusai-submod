@@ -65,8 +65,13 @@ export const createDirectoryElevated = (path: string) => {
 
 export const killProcess = (process: ChildProcess) => {
   if (os.platform() === 'win32') {
-    sudo.exec(`taskkill /pid ${process.pid} /f /t`, (err) => {
-      console.error(err);
+    const options = {
+      name: 'MorpheusAI SubMod',
+      icns: './../logo_white.ico',
+    };
+
+    sudo.exec(`taskkill /pid ${process.pid} /f /t`, options, (err) => {
+      logger.error(err);
     });
   } else {
     process.kill();

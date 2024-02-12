@@ -67,7 +67,7 @@ const AppRoot = () => {
     const ollamaInit = await window.backendBridge.ollama.init();
 
     if (ollamaInit) {
-      const model = await window.backendBridge.ollama.getModel('mistral');
+      const model = await window.backendBridge.ollama.getModel('orca-mini');
 
       if (model) {
         setIsInitialized(true);

@@ -110,6 +110,8 @@ const Chat = {
     height: 80%;
     flex-direction: column;
     padding: 20px;
+    margin-bottom: 20px;
+    overflow: scroll;
   `,
   QuestionWrapper: Styled.div`
     display: flex;
